@@ -11,12 +11,18 @@ import google.generativeai as genai
 from google.generativeai.types import HarmCategory, HarmBlockThreshold
 
 class EnhancedRAGPipeline:
-    def __init__(self, api_key: str):
+    def __init__(self, api_key: str, redis_host: str = 'localhost', redis_port: int = 6379, redis_password: str = ''):
         self.query_classifier = pipeline("zero-shot-classification")
         self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
         self.reranker = SentenceTransformer('cross-encoder/ms-marco-MiniLM-L-6-v2')
-        self.redis_client = redis.Redis(host='localhost', port=6379)
-        self.media_loader = MediaLoader()
+        
+        # Initialize Redis with configuration
+        self.redis_client = redis.Redis(
+            host=redis_host,
+            port=redis_port,
+            password=redis_password,
+            decode_responses=True
+        )
         
         # Initialize Gemini
         genai.configure(api_key=api_key)
