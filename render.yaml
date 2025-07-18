@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: rag-api
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn api:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: GOOGLE_API_KEY
+        sync: false
+      - key: REDIS_HOST
+        sync: false
+      - key: REDIS_PORT
+        sync: false
+      - key: REDIS_PASSWORD
+        sync: false
+    autoDeploy: true
+
+  - type: redis
+    name: rag-redis
+    ipAllowList:
+      - source: 0.0.0.0/0
+        description: everywhere
+    plan: free
